@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The YongYoo Diary 💕</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💌</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ff5c8a; --pink-soft:#ffd6e4; --pink-bg:#fff0f5;
+    --purple:#a26bff; --ink:#4a2c3a; --ink-soft:#8a6b78;
+    --card:#ffffff; --border:#ffd0e0; --shadow:0 8px 24px rgba(255,92,138,.12);
+    --green:#34c77b; --radius:18px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Quicksand','Segoe UI',sans-serif;
+    background:linear-gradient(160deg,#ffe9f0 0%,#fff7fb 55%,#f3ebff 100%);
+    min-height:100vh; color:var(--ink);
+  }
+  /* floating background hearts */
+  .bg-heart{position:fixed; bottom:-40px; font-size:26px; opacity:.18; animation:floatUp linear infinite; pointer-events:none; z-index:0;}
+  @keyframes floatUp{
+    0%{transform:translateY(0) rotate(0deg); opacity:0;}
+    10%{opacity:.22;}
+    90%{opacity:.15;}
+    100%{transform:translateY(-110vh) rotate(340deg); opacity:0;}
+  }
+
+  /* ---------- lock screen ---------- */
+  #lockScreen{
+    position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(160deg,#ffd6e4 0%,#ffeef5 50%,#e9dcff 100%); padding:20px;
+  }
+  #lockScreen.hidden{display:none;}
+  .lock-card{
+    background:var(--card); border-radius:26px; box-shadow:0 20px 60px rgba(255,92,138,.25);
+    padding:44px 38px; width:100%; max-width:420px; text-align:center; border:2px solid var(--pink-soft);
+  }
+  .lock-card .lock-emoji{font-size:52px;}
+  .lock-card h1{font-family:'Pacifico',cursive; font-weight:400; font-size:30px; color:var(--pink); margin:10px 0 4px;}
+  .lock-card p{color:var(--ink-soft); font-size:14px; margin-bottom:22px;}
+  .lock-card input{
+    width:100%; padding:13px 16px; border:2px solid var(--border); border-radius:14px;
+    font-size:15px; font-family:inherit; margin-bottom:12px; outline:none; transition:border .2s;
+  }
+  .lock-card input:focus{border-color:var(--pink);}
+  .lock-error{color:#e0245e; font-size:13px; min-height:18px; margin-bottom:6px;}
+  .shake{animation:shake .4s;}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
+  .lock-note{font-size:12px; color:var(--ink-soft); margin-top:14px;}
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    background:linear-gradient(135deg,var(--pink),#ff8fb3); color:#fff; border:none; cursor:pointer;
+    font-family:inherit; font-weight:700; font-size:15px; padding:13px 22px; border-radius:999px;
+    box-shadow:0 6px 16px rgba(255,92,138,.35); transition:transform .15s, box-shadow .15s;
+  }
+  .btn:hover{transform:translateY(-2px); box-shadow:0 10px 22px rgba(255,92,138,.4);}
+  .btn:active{transform:translateY(0);}
+  .btn.ghost{background:#fff; color:var(--pink); border:2px solid var(--pink-soft); box-shadow:none;}
+  .btn.small{padding:8px 16px; font-size:13px;}
+  .btn.danger{background:linear-gradient(135deg,#ff4d6d,#ff8fa3);}
+
+  /* ---------- app layout ---------- */
+  #app{display:none; position:relative; z-index:1; max-width:980px; margin:0 auto; padding:20px 18px 80px;}
+  #app.unlocked{display:block;}
+  header.app-header{text-align:center; padding:22px 0 6px;}
+  header.app-header h1{font-family:'Pacifico',cursive; font-weight:400; font-size:clamp(30px,5vw,44px); color:var(--pink); text-shadow:0 2px 0 #fff;}
+  header.app-header .tagline{color:var(--ink-soft); font-size:15px; margin-top:6px;}
+  nav.tabs{
+    display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:20px 0 26px;
+    position:sticky; top:10px; z-index:50; padding:8px;
+    background:rgba(255,255,255,.75); backdrop-filter:blur(8px); border-radius:999px; border:1px solid var(--border);
+  }
+  nav.tabs button{
+    border:none; background:transparent; font-family:inherit; font-weight:700; font-size:14px;
+    color:var(--ink-soft); padding:10px 18px; border-radius:999px; cursor:pointer; transition:all .2s;
+  }
+  nav.tabs button:hover{background:#ffeef5;}
+  nav.tabs button.active{background:linear-gradient(135deg,var(--pink),#ff8fb3); color:#fff; box-shadow:0 4px 12px rgba(255,92,138,.35);}
+  .view{display:none; animation:fadeIn .35s ease;}
+  .view.active{display:block;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+  .card{background:var(--card); border:2px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; margin-bottom:22px;}
+  .card h2{font-size:20px; margin-bottom:4px;}
+  .card .sub{color:var(--ink-soft); font-size:13px; margin-bottom:16px;}
+
+  /* ---------- home: love meter ---------- */
+  .meter-card{text-align:center; background:linear-gradient(150deg,#fff 60%,#fff5f9); overflow:hidden; position:relative;}
+  .meter-card h2{font-size:22px;}
+  .meter-big{font-size:64px; font-weight:700; background:linear-gradient(135deg,var(--pink),var(--purple)); -webkit-background-clip:text; background-clip:text; color:transparent; margin:6px 0 2px;}
+  .meter-bar{height:26px; background:#ffe4ec; border-radius:999px; overflow:hidden; border:2px solid var(--border); margin:14px auto 10px; max-width:560px;}
+  .meter-fill{
+    height:100%; width:0%; border-radius:999px; transition:width 1.2s cubic-bezier(.22,1,.36,1);
+    background:linear-gradient(90deg,#ffb3c9,var(--pink),#ff4d79); position:relative;
+  }
+  .meter-fill::after{
+    content:'💗'; position:absolute; right:-14px; top:50%; transform:translateY(-50%); font-size:22px;
+  }
+  .meter-info{font-size:13px; color:var(--ink-soft); margin-top:8px;}
+  .meter-status{font-size:15px; font-weight:700; margin-top:10px; color:var(--pink);}
+  .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:22px;}
+  .stat-mini{background:var(--card); border:2px solid var(--border); border-radius:var(--radius); padding:18px 14px; text-align:center; box-shadow:var(--shadow);}
+  .stat-mini .num{font-size:26px; font-weight:700; color:var(--pink);}
+  .stat-mini .lbl{font-size:12.5px; color:var(--ink-soft); margin-top:4px; line-height:1.4;}
+  .latest-preview .story{white-space:pre-wrap; font-size:14.5px; line-height:1.65; margin-top:8px;}
+  .empty-hero{text-align:center; padding:30px 10px;}
+  .empty-hero .big{font-size:56px;}
+  .empty-hero h2{font-family:'Pacifico',cursive; font-weight:400; color:var(--pink); font-size:28px; margin:12px 0 8px;}
+  .empty-hero p{color:var(--ink-soft); max-width:420px; margin:0 auto 22px; line-height:1.6;}
+  .empty-hero .row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+
+  /* ---------- form ---------- */
+  .field{margin-bottom:18px;}
+  .field label{display:block; font-weight:700; font-size:14px; margin-bottom:7px;}
+  .field input[type="date"], .field input[type="text"]{
+    width:100%; padding:12px 14px; border:2px solid var(--border); border-radius:12px; font-family:inherit; font-size:14.5px; outline:none; transition:border .2s; background:#fff;
+  }
+  .field input:focus{border-color:var(--pink);}
+  .field textarea{
+    width:100%; min-height:130px; padding:12px 14px; border:2px solid var(--border); border-radius:12px;
+    font-family:inherit; font-size:14.5px; resize:vertical; outline:none; transition:border .2s; line-height:1.6;
+  }
+  .field textarea:focus{border-color:var(--pink);}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:640px){.field-row{grid-template-columns:1fr;}}
+  .hearts-picker{display:flex; gap:6px; font-size:34px; cursor:pointer; user-select:none;}
+  .hearts-picker span{filter:grayscale(1); opacity:.35; transition:all .15s;}
+  .hearts-picker span.on{filter:none; opacity:1; transform:scale(1.12);}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    border:2px solid var(--border); background:#fff; border-radius:999px; padding:7px 14px;
+    font-family:inherit; font-size:13px; font-weight:600; color:var(--ink-soft); cursor:pointer; transition:all .15s;
+  }
+  .chip:hover{border-color:var(--pink);}
+  .chip.active{background:linear-gradient(135deg,var(--pink),#ff8fb3); color:#fff; border-color:transparent;}
+  .custom-tag-row{display:flex; gap:8px; margin-top:10px;}
+  .custom-tag-row input{flex:1; padding:10px 14px; border:2px solid var(--border); border-radius:999px; font-family:inherit; font-size:13.5px; outline:none;}
+  .custom-tag-row input:focus{border-color:var(--pink);}
+  .photo-drop{
+    border:2px dashed var(--border); border-radius:14px; padding:18px; text-align:center; color:var(--ink-soft);
+    font-size:13.5px; cursor:pointer; transition:all .2s;
+  }
+  .photo-drop:hover{border-color:var(--pink); background:#fff5f9;}
+  .photo-preview{position:relative; margin-top:10px; display:none;}
+  .photo-preview img{max-width:100%; max-height:240px; border-radius:12px; border:2px solid var(--border);}
+  .photo-preview .rm{
+    position:absolute; top:8px; right:8px; background:#fff; border:1px solid var(--border); border-radius:999px;
+    width:30px; height:30px; cursor:pointer; font-size:14px;
+  }
+  .form-actions{display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+  .editing-note{display:none; background:#fff5f9; border:1px solid var(--border); border-radius:10px; padding:8px 14px; font-size:13px; color:var(--pink); font-weight:700;}
+
+  /* ---------- timeline ---------- */
+  .timeline{position:relative; padding-left:34px;}
+  .timeline::before{
+    content:''; position:absolute; left:11px; top:6px; bottom:6px; width:3px;
+    background:linear-gradient(var(--pink),var(--purple)); border-radius:99px; opacity:.5;
+  }
+  .tl-item{position:relative; margin-bottom:22px;}
+  .tl-item::before{
+    content:'💗'; position:absolute; left:-34px; top:16px; font-size:20px; background:transparent; z-index:1;
+  }
+  .tl-card{background:var(--card); border:2px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; transition:transform .15s;}
+  .tl-card:hover{transform:translateY(-2px);}
+  .tl-head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;}
+  .tl-date{font-size:12px; font-weight:700; color:var(--purple); background:#f3ecff; padding:4px 10px; border-radius:999px; display:inline-block;}
+  .tl-title{font-size:17px; font-weight:700; margin-top:8px;}
+  .tl-hearts{font-size:16px; letter-spacing:2px; margin-top:6px;}
+  .tl-hearts .on{color:var(--pink);} .tl-hearts .off{color:#e8d5dd;}
+  .tl-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
+  .tl-tags span{background:#fff0f5; color:var(--pink); border:1px solid var(--pink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;}
+  .tl-story{white-space:pre-wrap; font-size:14.5px; line-height:1.65; margin-top:10px; color:#5c3d4b;}
+  .tl-photo{margin-top:12px; cursor:zoom-in;}
+  .tl-photo img{max-width:100%; max-height:260px; border-radius:12px; border:2px solid var(--border); display:block;}
+  .tl-actions{display:flex; gap:8px; margin-top:14px;}
+  .tl-actions button{
+    border:1px solid var(--border); background:#fff; border-radius:999px; padding:5px 14px;
+    font-family:inherit; font-size:12.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; transition:all .15s;
+  }
+  .tl-actions button:hover{color:var(--pink); border-color:var(--pink);}
+
+  /* ---------- stats ---------- */
+  .stats-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-bottom:22px;}
+  #chart{width:100%; height:280px; display:block;}
+  .chart-caption{text-align:center; font-size:12.5px; color:var(--ink-soft); margin-top:8px;}
+  .tagbar-row{display:flex; align-items:center; gap:10px; margin-bottom:9px;}
+  .tagbar-label{width:170px; font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .tagbar-track{flex:1; height:16px; background:#ffeef5; border-radius:99px; overflow:hidden;}
+  .tagbar-fill{height:100%; background:linear-gradient(90deg,#ffb3c9,var(--pink)); border-radius:99px; transition:width .8s;}
+  .tagbar-count{width:34px; text-align:right; font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+
+  /* ---------- badges ---------- */
+  .badge-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px;}
+  .badge{
+    background:var(--card); border:2px solid var(--border); border-radius:var(--radius); padding:18px 12px;
+    text-align:center; box-shadow:var(--shadow); transition:transform .15s;
+  }
+  .badge:hover{transform:translateY(-3px);}
+  .badge .b-ico{font-size:36px;}
+  .badge .b-name{font-weight:700; font-size:14px; margin-top:8px;}
+  .badge .b-desc{font-size:11.5px; color:var(--ink-soft); margin-top:4px; line-height:1.45;}
+  .badge .b-date{font-size:11px; color:var(--green); font-weight:700; margin-top:6px;}
+  .badge.locked{filter:grayscale(1); opacity:.55;}
+  .badge.locked .b-date{color:transparent;}
+  .badge.locked .b-ico::after{content:'🔒'; font-size:16px; position:relative; top:-30px; left:24px;}
+
+  /* ---------- settings modal ---------- */
+  .modal-back{
+    position:fixed; inset:0; background:rgba(74,44,58,.45); z-index:90; display:none;
+    align-items:center; justify-content:center; padding:18px; backdrop-filter:blur(3px);
+  }
+  .modal-back.open{display:flex;}
+  .modal{
+    background:#fff; border-radius:22px; max-width:440px; width:100%; max-height:88vh; overflow-y:auto;
+    padding:28px; border:2px solid var(--border);
+  }
+  .modal h3{font-size:19px; margin-bottom:14px; color:var(--pink);}
+  .modal .sec{border-top:1px dashed var(--border); padding-top:16px; margin-top:16px;}
+  .modal .sec h4{font-size:14px; margin-bottom:10px;}
+  .modal input{width:100%; padding:11px 14px; border:2px solid var(--border); border-radius:12px; font-family:inherit; font-size:14px; margin-bottom:10px; outline:none;}
+  .modal input:focus{border-color:var(--pink);}
+  .modal .row{display:flex; gap:10px; flex-wrap:wrap;}
+  .modal .close-x{float:right; border:none; background:#ffeef5; width:32px; height:32px; border-radius:99px; cursor:pointer; font-size:15px; color:var(--pink); font-weight:700;}
+
+  /* ---------- lightbox / toast / confetti ---------- */
+  #lightbox{position:fixed; inset:0; background:rgba(40,15,25,.85); z-index:120; display:none; align-items:center; justify-content:center; padding:24px; cursor:zoom-out;}
+  #lightbox.open{display:flex;}
+  #lightbox img{max-width:94vw; max-height:90vh; border-radius:14px; border:3px solid #fff;}
+  #toastWrap{position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:130; display:flex; flex-direction:column; gap:8px; align-items:center; width:max-content; max-width:92vw;}
+  .toast{
+    background:var(--ink); color:#fff; padding:12px 20px; border-radius:999px; font-size:14px; font-weight:600;
+    box-shadow:0 8px 20px rgba(0,0,0,.25); animation:toastIn .3s ease; max-width:92vw; text-align:center;
+  }
+  @keyframes toastIn{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+  .toast.fade{opacity:0; transition:opacity .5s;}
+  #confettiCanvas{position:fixed; inset:0; z-index:140; pointer-events:none;}
+  footer{ text-align:center; color:var(--ink-soft); font-size:12.5px; padding:30px 10px 10px; line-height:1.8;}
+</style>
+</head>
+<body>
+
+<!-- floating background hearts (decor) -->
+<span class="bg-heart" style="left:6%; animation-duration:16s;">💗</span>
+<span class="bg-heart" style="left:20%; animation-duration:22s; animation-delay:3s;">💖</span>
+<span class="bg-heart" style="left:38%; animation-duration:18s; animation-delay:7s;">💕</span>
+<span class="bg-heart" style="left:55%; animation-duration:25s; animation-delay:1s;">💗</span>
+<span class="bg-heart" style="left:72%; animation-duration:19s; animation-delay:5s;">💞</span>
+<span class="bg-heart" style="left:88%; animation-duration:21s; animation-delay:9s;">💖</span>
+
+<!-- ============ LOCK SCREEN ============ -->
+<div id="lockScreen">
+  <div class="lock-card" id="lockCard">
+    <div class="lock-emoji">🔐</div>
+    <h1>The YongYoo Diary</h1>
+    <p id="lockSubtitle">Yongjun ♥ Yoorin — top secret archives</p>
+
+    <!-- first run: create password -->
+    <div id="setupMode">
+      <input type="password" id="setupPass1" placeholder="Create a secret password..." autocomplete="new-password">
+      <input type="password" id="setupPass2" placeholder="Confirm it (no typos!)" autocomplete="new-password">
+      <div class="lock-error" id="setupError"></div>
+      <button class="btn" style="width:100%;" onclick="doSetupPassword()">💌 Open the diary for the first time</button>
+    </div>
+
+    <!-- returning: unlock -->
+    <div id="unlockMode" style="display:none;">
+      <input type="password" id="unlockPass" placeholder="Secret password..." autocomplete="current-password">
+      <div class="lock-error" id="unlockError"></div>
+      <button class="btn" style="width:100%;" onclick="doUnlock()">🔓 Unlock the love archive</button>
+    </div>
+
+    <div class="lock-note">This lock is just for fun — everything is stored privately in this browser. 😄</div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+  <header class="app-header">
+    <h1>The YongYoo Diary 💕</h1>
+    <div class="tagline">Every little moment between <b>Yongjun</b> &amp; <b>Yoorin</b>, archived forever</div>
+  </header>
+
+  <nav class="tabs">
+    <button data-view="home" class="active">🏠 Home</button>
+    <button data-view="write">✍️ Write Memory</button>
+    <button data-view="timeline">📖 Timeline</button>
+    <button data-view="stats">📊 Stats</button>
+    <button data-view="badges">🏅 Badges</button>
+    <button onclick="openSettings()">⚙️</button>
+  </nav>
+
+  <!-- HOME -->
+  <section class="view active" id="view-home">
+    <div id="homeEmpty" style="display:none;">
+      <div class="card empty-hero">
+        <div class="big">💌</div>
+        <h2>Chapter One starts here...</h2>
+        <p>No memories yet! Every love story needs its historian. Write the first entry about Yongjun &amp; Yoorin, or load some demo memories to see how the diary works.</p>
+        <div class="row">
+          <button class="btn" onclick="goWrite()">✍️ Write the first memory</button>
+          <button class="btn ghost" onclick="loadDemo()">✨ Load demo memories</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="homeContent">
+      <div class="card meter-card">
+        <h2>🌡️ The Love Meter</h2>
+        <div class="meter-big" id="meterPct">0%</div>
+        <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
+        <div class="meter-status" id="meterStatus"></div>
+        <div class="meter-info" id="meterInfo"></div>
+      </div>
+
+      <div class="stat-grid" id="homeStats"></div>
+
+      <div class="card latest-preview" id="latestCard">
+        <h2>🆕 Latest memory</h2>
+        <div id="latestBody"></div>
+        <div style="margin-top:14px;"><button class="btn ghost small" onclick="switchView('timeline')">Read the full timeline →</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRITE -->
+  <section class="view" id="view-write">
+    <div class="card">
+      <h2 id="formTitle">✍️ New memory</h2>
+      <div class="sub">What happened between Yongjun and Yoorin today? Be honest — this diary never tells. 🤫</div>
+      <div class="editing-note" id="editingNote">✏️ Editing an existing memory</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="fDate">📅 Date</label>
+          <input type="date" id="fDate">
+        </div>
+        <div class="field">
+          <label for="fTitle">📝 Title</label>
+          <input type="text" id="fTitle" maxlength="80" placeholder="e.g. She waved first today!!">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>💗 How close did today feel?</label>
+        <div class="hearts-picker" id="heartsPicker"></div>
+      </div>
+
+      <div class="field">
+        <label for="fStory">📖 The story</label>
+        <textarea id="fStory" placeholder="Tell the whole story... the awkward moments count double."></textarea>
+      </div>
+
+      <div class="field">
+        <label>🏷️ Tags (pick all that apply)</label>
+        <div class="chips" id="tagChips"></div>
+        <div class="custom-tag-row">
+          <input type="text" id="customTag" maxlength="20" placeholder="or invent your own tag...">
+          <button class="btn ghost small" onclick="addCustomTag()">+ Add</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>📸 Photo evidence (optional)</label>
+        <div class="photo-drop" id="photoDrop">Click to attach a photo (max ~720px, stored in your browser)</div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none;">
+        <div class="photo-preview" id="photoPreview">
+          <img id="photoPreviewImg" alt="attached photo">
+          <button class="rm" onclick="removePhoto()" title="Remove photo">✕</button>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn" id="saveBtn" onclick="saveEntry()">💾 Save this memory</button>
+        <button class="btn ghost" id="cancelEditBtn" style="display:none;" onclick="cancelEdit()">Cancel edit</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="view" id="view-timeline">
+    <div class="card">
+      <h2>📖 The full story so far</h2>
+      <div class="sub" id="timelineSub"></div>
+      <div class="timeline" id="timelineList"></div>
+      <div id="timelineEmpty" style="display:none; text-align:center; padding:30px 0; color:var(--ink-soft);">
+        <div style="font-size:44px;">🍂</div>
+        <p style="margin-top:10px;">No memories here yet. The story is waiting to be written!</p>
+        <button class="btn small" style="margin-top:14px;" onclick="goWrite()">✍️ Write a memory</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="view" id="view-stats">
+    <div class="card">
+      <h2>📊 Love statistics</h2>
+      <div class="sub">Numbers don't lie... but they do dramatize. 📈</div>
+      <div class="stats-grid" id="statsGrid"></div>
+    </div>
+    <div class="card">
+      <h2>💗 Closeness over time</h2>
+      <div class="sub">Each dot is one memory — the higher, the closer the day.</div>
+      <canvas id="chart"></canvas>
+      <div class="chart-caption" id="chartCaption"></div>
+    </div>
+    <div class="card">
+      <h2>🏷️ Tag frequency</h2>
+      <div class="sub">What does their story mostly consist of?</div>
+      <div id="tagBars"></div>
+    </div>
+  </section>
+
+  <!-- BADGES -->
+  <section class="view" id="view-badges">
+    <div class="card">
+      <h2>🏅 Milestone badges</h2>
+      <div class="sub" id="badgeSub">Achievements unlocked on the road to Yoorin's heart.</div>
+      <div class="badge-grid" id="badgeGrid"></div>
+    </div>
+  </section>
+
+  <footer>
+    Made with 💗 for Yongjun &amp; Yoorin<br>
+    All memories live only in this browser (localStorage) — export a backup from ⚙️ Settings.
+  </footer>
+</div>
+
+<!-- ============ SETTINGS MODAL ============ -->
+<div class="modal-back" id="settingsModal">
+  <div class="modal">
+    <button class="close-x" onclick="closeSettings()">✕</button>
+    <h3>⚙️ Settings</h3>
+
+    <div class="sec">
+      <h4>🔒 Change password</h4>
+      <input type="password" id="curPass" placeholder="Current password">
+      <input type="password" id="newPass1" placeholder="New password">
+      <input type="password" id="newPass2" placeholder="Repeat new password">
+      <button class="btn small" onclick="changePassword()">Update password</button>
+    </div>
+
+    <div class="sec">
+      <h4>💾 Backup &amp; restore</h4>
+      <div class="row">
+        <button class="btn ghost small" onclick="exportData()">⬇️ Export backup (.json)</button>
+        <button class="btn ghost small" onclick="document.getElementById('importFile').click()">⬆️ Import backup</button>
+        <input type="file" id="importFile" accept=".json" style="display:none;">
+      </div>
+    </div>
+
+    <div class="sec">
+      <h4>✨ Demo data</h4>
+      <button class="btn ghost small" onclick="loadDemo()">Load demo memories</button>
+    </div>
+
+    <div class="sec">
+      <h4>⚠️ Danger zone</h4>
+      <div class="row">
+        <button class="btn ghost small" onclick="lockDiary()">🔒 Lock diary now</button>
+        <button class="btn danger small" onclick="wipeAll()">🗑️ Erase everything</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- lightbox for photos -->
+<div id="lightbox"><img id="lightboxImg" alt="photo enlarged"></div>
+<div id="toastWrap"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   THE YONGYOO DIARY — single-file app.
+   Data: localStorage keys below. No server, no accounts, no tears.
+===================================================================== */
+const K = { entries:'yy_entries', badges:'yy_badges', pass:'yy_pass', party:'yy_party100' };
+const TAGS = [
+  {key:'texted',  label:'📱 Texted'},
+  {key:'talked',  label:'💬 Talked'},
+  {key:'ate',     label:'🍜 Ate together'},
+  {key:'saw',     label:'🏫 Saw her'},
+  {key:'walked',  label:'🚶 Walked together'},
+  {key:'called',  label:'☎️ Called'},
+  {key:'gift',    label:'🎁 Gave a gift'},
+  {key:'blushed', label:'😳 Blushed'},
+  {key:'game',    label:'🎮 Played together'},
+  {key:'ignored', label:'💔 Got ignored'},
+  {key:'sad',     label:'😢 Sad day'},
+];
+const BADGES = [
+  {id:'first',   icon:'📖', name:'Dear Diary',            desc:'Write your very first memory',            cond:(s)=>s.totalEntries>=1},
+  {id:'h5',      icon:'💖', name:'Best Day Ever',         desc:'Log a 5-heart day',                       cond:(s,e)=>!!e && e.hearts===5},
+  {id:'texted',  icon:'📱', name:'Phone Buddy',           desc:'A memory tagged "Texted"',                cond:(s)=>s.tagCounts.texted>0},
+  {id:'meal',    icon:'🍜', name:'Lunch Date',            desc:'A memory tagged "Ate together"',          cond:(s)=>s.tagCounts.ate>0},
+  {id:'photo',   icon:'📸', name:'Receipts Kept',         desc:'Attach a photo to a memory',              cond:(s)=>s.photoCount>0},
+  {id:'comeback',icon:'💪', name:'Never Give Up',         desc:'Write a memory after 7+ silent days',     cond:(s,c)=>c.prevGap>=7},
+  {id:'s7',      icon:'🦋', name:'Week of Butterflies',   desc:'7-day contact streak',                    cond:(s)=>s.longestStreak>=7},
+  {id:'s30',     icon:'🐥', name:'Monthly Lovebird',      desc:'30-day contact streak',                   cond:(s)=>s.longestStreak>=30},
+  {id:'e10',     icon:'💗', name:'Getting Serious',       desc:'Reach 10 memories',                       cond:(s)=>s.totalEntries>=10},
+  {id:'e50',     icon:'📚', name:'Crush Historian',       desc:'Reach 50 memories',                       cond:(s)=>s.totalEntries>=50},
+  {id:'m50',     icon:'🌡️', name:'Halfway to Her Heart', desc:'Love meter reaches 50%',                  cond:(s)=>s.meter>=50},
+  {id:'m100',    icon:'💥', name:'HEART FULL!!!',         desc:'Love meter reaches 100%',                 cond:(s)=>s.meter>=100},
+  {id:'d100',    icon:'💯', name:'100 Days of Crush',     desc:'100 days since the first memory',         cond:(s)=>s.daysSinceFirst>=100},
+];
+
+let state = { entries:[], unlocked:{}, editingId:null, formHearts:3, pendingPhoto:null };
+
+/* ---------- tiny helpers ---------- */
+const $ = id => document.getElementById(id);
+function pad(n){ return String(n).padStart(2,'0'); }
+function dateToStr(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function todayStr(){ return dateToStr(new Date()); }
+function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function daysBetween(a,b){ return Math.round((parseDate(b)-parseDate(a))/86400000); }
+function fmtDate(s){
+  return parseDate(s).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+}
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function heartsText(n){
+  let out='';
+  for(let i=1;i<=5;i++) out += '<span class="'+(i<=n?'on':'off')+'">♥</span>';
+  return out;
+}
+function tagLabel(key){
+  const t = TAGS.find(t=>t.key===key);
+  return t ? t.label : '🏷️ '+key;
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+function toast(msg, ms=3200){
+  const el=document.createElement('div');
+  el.className='toast'; el.innerHTML=msg;
+  $('toastWrap').appendChild(el);
+  setTimeout(()=>{ el.classList.add('fade'); setTimeout(()=>el.remove(),600); }, ms);
+}
+
+/* ---------- storage ---------- */
+function loadAll(){
+  try{ state.entries = JSON.parse(localStorage.getItem(K.entries)||'[]'); }catch(e){ state.entries=[]; }
+  try{ state.unlocked = JSON.parse(localStorage.getItem(K.badges)||'{}'); }catch(e){ state.unlocked={}; }
+}
+function saveEntries(){
+  try{ localStorage.setItem(K.entries, JSON.stringify(state.entries)); }
+  catch(e){ alert('Could not save 😢 Your browser storage is full (probably a big photo). Try smaller photos.'); throw e; }
+}
+function saveBadges(){ localStorage.setItem(K.badges, JSON.stringify(state.unlocked)); }
+
+/* ---------- love meter ---------- */
+function computeMeter(entries){
+  if(!entries.length) return {meter:0, points:0, decay:0, lastDate:null};
+  const points = entries.reduce((s,e)=>s+e.hearts*2, 0);
+  const lastDate = entries.map(e=>e.date).sort().pop();
+  const silent = Math.max(0, daysBetween(lastDate, todayStr()));
+  const decay = Math.min(30, silent); // each silent day -1 pt, capped at 30
+  const meter = Math.max(0, Math.min(100, points - decay));
+  return {meter, points, decay, lastDate};
+}
+
+/* ---------- stats ---------- */
+function computeStats(){
+  const es = state.entries;
+  const dates = [...new Set(es.map(e=>e.date))].sort();
+  const today = todayStr();
+
+  // streaks
+  let longest=0, run=0, prev=null;
+  for(const d of dates){
+    run = (prev && daysBetween(prev,d)===1) ? run+1 : 1;
+    if(run>longest) longest=run;
+    prev=d;
+  }
+  let current=0;
+  const dset = new Set(dates);
+  const cursor = new Date();
+  if(!dset.has(dateToStr(cursor))) cursor.setDate(cursor.getDate()-1); // streak survives "yesterday"
+  while(dset.has(dateToStr(cursor))){ current++; cursor.setDate(cursor.getDate()-1); }
+
+  const tagCounts = {};
+  let photoCount=0, heartsSum=0;
+  for(const e of es){
+    heartsSum += e.hearts;
+    if(e.photo) photoCount++;
+    for(const t of (e.tags||[])) tagCounts[t]=(tagCounts[t]||0)+1;
+  }
+  const meterInfo = computeMeter(es);
+  const firstDate = dates.length ? dates[0] : null;
+  const daysSinceFirst = firstDate ? Math.max(0, daysBetween(firstDate, today)) : 0;
+  const daysSinceLast = meterInfo.lastDate ? Math.max(0, daysBetween(meterInfo.lastDate, today)) : null;
+
+  return {
+    totalEntries: es.length,
+    daysTracked: dates.length,
+    currentStreak: current,
+    longestStreak: longest,
+    avgHearts: es.length ? (heartsSum/es.length) : 0,
+    tagCounts, photoCount,
+    meter: meterInfo.meter, meterPoints: meterInfo.points, meterDecay: meterInfo.decay,
+    lastDate: meterInfo.lastDate, firstDate,
+    daysSinceFirst, daysSinceLast,
+  };
+}
+
+/* ---------- badges ---------- */
+function checkAndAwardBadges(savedEntry, prevGap){
+  const stats = computeStats();
+  const ctx = {prevGap: prevGap||0};
+  const newly = [];
+  for(const b of BADGES){
+    if(!state.unlocked[b.id]){
+      let ok=false;
+      try{ ok = b.cond(stats, savedEntry, ctx); }catch(e){}
+      if(ok) newly.push(b);
+    }
+  }
+  if(newly.length){
+    for(const b of newly) state.unlocked[b.id]=todayStr();
+    saveBadges();
+    newly.forEach((b,i)=> setTimeout(()=>toast(b.icon+' Badge unlocked: <b>'+esc(b.name)+'</b>!'), 400+i*900));
+  }
+  // the big celebration
+  if(stats.meter>=100 && !localStorage.getItem(K.party)){
+    localStorage.setItem(K.party,'1');
+    setTimeout(()=>{ fireConfetti(); toast('💖💥 The Love Meter is FULL — Yongjun has officially fallen for Yoorin! 🎉', 6000); }, 800);
+  }
+}
+
+/* ---------- views ---------- */
+function switchView(name){
+  document.querySelectorAll('nav.tabs button[data-view]').forEach(b=>{
+    b.classList.toggle('active', b.dataset.view===name);
+  });
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('view-'+name).classList.add('active');
+  if(name==='home') renderHome();
+  if(name==='timeline') renderTimeline();
+  if(name==='stats') renderStats();
+  if(name==='badges') renderBadges();
+}
+document.querySelectorAll('nav.tabs button[data-view]').forEach(b=>{
+  b.addEventListener('click', ()=>switchView(b.dataset.view));
+});
+function goWrite(){
+  resetForm();
+  switchView('write');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---------- render: home ---------- */
+function meterStatusText(m){
+  if(m>=100) return '💥 FULL — Yongjun is officially, hopelessly in love!';
+  if(m>=80)  return '🔥 So close... the heart is almost full!';
+  if(m>=50)  return '💓 Halfway there — keep the moments coming!';
+  if(m>=20)  return '🌱 Something is definitely growing...';
+  if(m>0)    return '🌱 Just planted... water it with memories!';
+  return '🫙 The meter is empty. Yongjun, do something!';
+}
+function renderHome(){
+  const stats = computeStats();
+  const has = state.entries.length>0;
+  $('homeEmpty').style.display = has?'none':'block';
+  $('homeContent').style.display = has?'block':'none';
+  if(!has) return;
+
+  $('meterPct').textContent = stats.meter+'%';
+  $('meterFill').style.width = stats.meter+'%';
+  $('meterStatus').textContent = meterStatusText(stats.meter);
+  $('meterInfo').innerHTML =
+    'Points: <b>'+stats.meterPoints+'</b> (+2 per ♥ collected)'+
+    (stats.meterDecay>0 ? ' &nbsp;•&nbsp; Silent days: <b>'+stats.meterDecay+'</b> (−1/day, max −30)' : '')+
+    '<br>100% needs 200 points — currently '+Math.round(stats.meterPoints/2)+'% of the way there.';
+
+  const cards = [
+    {num:'📖 '+stats.totalEntries, lbl:'memories written'},
+    {num:'🔥 '+stats.currentStreak, lbl:'day contact streak'},
+    {num:'📅 '+stats.daysSinceFirst, lbl:'days since day one'},
+    {num: stats.daysSinceLast===0 ? '💕 today!' : (stats.daysSinceLast===null?'—':'😢 '+stats.daysSinceLast),
+     lbl: stats.daysSinceLast===0 ? 'contact happened today' : 'days since last memory'},
+  ];
+  $('homeStats').innerHTML = cards.map(c=>
+    '<div class="stat-mini"><div class="num">'+c.num+'</div><div class="lbl">'+c.lbl+'</div></div>').join('');
+
+  const latest = [...state.entries].sort((a,b)=> b.date===a.date ? (b.created||0)-(a.created||0) : (b.date>a.date?1:-1))[0];
+  $('latestBody').innerHTML =
+    '<div style="margin-top:10px;"><span class="tl-date">'+fmtDate(latest.date)+'</span></div>'+
+    '<div class="tl-title">'+esc(latest.title)+'</div>'+
+    '<div class="tl-hearts">'+heartsText(latest.hearts)+'</div>'+
+    '<div class="story">'+esc(latest.story||'')+'</div>';
+}
+
+/* ---------- render: timeline ---------- */
+function sortedEntries(){
+  return [...state.entries].sort((a,b)=> b.date===a.date ? (b.created||0)-(a.created||0) : (b.date>a.date?1:-1));
+}
+function renderTimeline(){
+  const list = sortedEntries();
+  $('timelineSub').textContent = list.length
+    ? list.length+' memories • '+fmtDate(list[list.length-1].date)+' → '+fmtDate(list[0].date)
+    : 'Nothing here yet.';
+  $('timelineEmpty').style.display = list.length?'none':'block';
+  $('timelineList').innerHTML = list.map(e=>
+    '<div class="tl-item">'+
+      '<div class="tl-card">'+
+        '<div class="tl-head"><span class="tl-date">'+fmtDate(e.date)+'</span>'+
+          '<div class="tl-actions">'+
+            '<button onclick="editEntry(\''+e.id+'\')">✏️ Edit</button>'+
+            '<button onclick="deleteEntry(\''+e.id+'\')">🗑️ Delete</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="tl-title">'+esc(e.title)+'</div>'+
+        '<div class="tl-hearts">'+heartsText(e.hearts)+'</div>'+
+        ((e.tags&&e.tags.length)? '<div class="tl-tags">'+e.tags.map(t=>'<span>'+esc(tagLabel(t))+'</span>').join('')+'</div>':'')+
+        (e.story? '<div class="tl-story">'+esc(e.story)+'</div>':'')+
+        (e.photo? '<div class="tl-photo" data-photo="1"><img src="'+e.photo+'" alt="memory photo" onclick="openLightbox(this.src)"></div>':'')+
+      '</div>'+
+    '</div>'
+  ).join('');
+}
+function deleteEntry(id){
+  const e = state.entries.find(x=>x.id===id);
+  if(!e) return;
+  if(!confirm('Delete this memory forever?\n\n"'+e.title+'"')) return;
+  state.entries = state.entries.filter(x=>x.id!==id);
+  saveEntries();
+  renderTimeline(); renderHome();
+  toast('🗑️ Memory deleted.');
+}
+
+/* ---------- render: stats ---------- */
+function renderStats(){
+  const s = computeStats();
+  const cards = [
+    {n:s.totalEntries, l:'📖 total memories'},
+    {n:s.daysTracked, l:'📅 days with a memory'},
+    {n:s.currentStreak, l:'🔥 current streak'},
+    {n:s.longestStreak, l:'🏆 longest streak'},
+    {n:(Math.round(s.avgHearts*10)/10)+' ♥', l:'💗 average closeness'},
+    {n:s.daysSinceLast===null?'—':s.daysSinceLast, l:'😢 days since last memory'},
+  ];
+  $('statsGrid').innerHTML = cards.map(c=>
+    '<div class="stat-mini"><div class="num">'+c.n+'</div><div class="lbl">'+c.l+'</div></div>').join('');
+  drawChart();
+  // tag bars
+  const counts = Object.entries(s.tagCounts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const max = counts.length?counts[0][1]:1;
+  $('tagBars').innerHTML = counts.length
+    ? counts.map(([k,v])=>
+      '<div class="tagbar-row"><div class="tagbar-label">'+esc(tagLabel(k))+'</div>'+
+      '<div class="tagbar-track"><div class="tagbar-fill" style="width:'+Math.round(v/max*100)+'%"></div></div>'+
+      '<div class="tagbar-count">'+v+'</div></div>').join('')
+    : '<div style="color:var(--ink-soft); font-size:14px;">No tags yet — add some when writing memories!</div>';
+}
+function drawChart(){
+  const canvas = $('chart');
+  const dpr = window.devicePixelRatio||1;
+  const w = canvas.clientWidth||600, h = 280;
+  canvas.width = w*dpr; canvas.height = h*dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+
+  const es = [...state.entries].sort((a,b)=> a.date<b.date?-1:1);
+  const padL=34, padR=16, padT=16, padB=30;
+  const cw=w-padL-padR, ch=h-padT-padB;
+  if(!es.length){
+    ctx.fillStyle='#b58ea0'; ctx.font='14px Quicksand, sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Write some memories to see the love graph! 💗', w/2, h/2);
+    $('chartCaption').textContent='';
+    return;
+  }
+  const xAt = i => es.length===1 ? padL+cw/2 : padL + i*(cw/(es.length-1));
+  const yAt = v => padT + ch - (v/5)*ch;
+
+  // grid
+  ctx.font='11px Quicksand, sans-serif';
+  for(let v=0;v<=5;v++){
+    const y=yAt(v);
+    ctx.strokeStyle= v===0 ? '#e8c4d2' : '#ffe4ec';
+    ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
+    ctx.fillStyle='#b58ea0'; ctx.textAlign='right';
+    ctx.fillText(v===5?'5♥':String(v), padL-8, y+4);
+  }
+  // area under line
+  const grad = ctx.createLinearGradient(0,padT,0,h-padB);
+  grad.addColorStop(0,'rgba(255,92,138,.28)'); grad.addColorStop(1,'rgba(255,92,138,0)');
+  ctx.beginPath();
+  es.forEach((e,i)=>{ const x=xAt(i), y=yAt(e.hearts); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+  ctx.lineTo(xAt(es.length-1), h-padB); ctx.lineTo(xAt(0), h-padB); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+  // line
+  ctx.beginPath();
+  es.forEach((e,i)=>{ const x=xAt(i), y=yAt(e.hearts); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+  ctx.strokeStyle='#ff5c8a'; ctx.lineWidth=3; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.stroke();
+  // dots
+  es.forEach((e,i)=>{
+    ctx.beginPath(); ctx.arc(xAt(i), yAt(e.hearts), 4.5, 0, Math.PI*2);
+    ctx.fillStyle='#fff'; ctx.fill();
+    ctx.strokeStyle='#ff5c8a'; ctx.lineWidth=2.5; ctx.stroke();
+  });
+  // first / last date labels
+  ctx.fillStyle='#b58ea0'; ctx.textAlign='left';
+  ctx.fillText(es[0].date, padL, h-10);
+  ctx.textAlign='right';
+  ctx.fillText(es[es.length-1].date, w-padR, h-10);
+
+  $('chartCaption').textContent = es.length+' memories plotted • every dot = one day, higher = closer 💗';
+}
+
+/* ---------- render: badges ---------- */
+function renderBadges(){
+  const got = Object.keys(state.unlocked).length;
+  $('badgeSub').textContent = got+' of '+BADGES.length+' unlocked. Collect them all, historian! 🏆';
+  $('badgeGrid').innerHTML = BADGES.map(b=>{
+    const un = state.unlocked[b.id];
+    return '<div class="badge'+(un?'':' locked')+'">'+
+      '<div class="b-ico">'+b.icon+'</div>'+
+      '<div class="b-name">'+esc(b.name)+'</div>'+
+      '<div class="b-desc">'+esc(b.desc)+'</div>'+
+      '<div class="b-date">'+(un?'Unlocked '+fmtDate(un):'&nbsp;')+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+/* ---------- form: hearts / tags / photo ---------- */
+function buildHeartsPicker(){
+  const el=$('heartsPicker'); el.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const s=document.createElement('span');
+    s.textContent='💗';
+    s.addEventListener('click',()=>{ state.formHearts=i; paintHearts(); });
+    el.appendChild(s);
+  }
+  paintHearts();
+}
+function paintHearts(){
+  [...$('heartsPicker').children].forEach((s,idx)=> s.classList.toggle('on', idx<state.formHearts));
+}
+function buildTagChips(){
+  const wrap=$('tagChips'); wrap.innerHTML='';
+  TAGS.forEach(t=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='chip'; b.dataset.tag=t.key; b.textContent=t.label;
+    b.addEventListener('click',()=>b.classList.toggle('active'));
+    wrap.appendChild(b);
+  });
+}
+function addCustomTag(){
+  const inp=$('customTag');
+  const v=inp.value.trim();
+  if(!v) return;
+  if([...$('tagChips').children].some(c=>(c.dataset.tag||'').toLowerCase()===v.toLowerCase())){
+    inp.value=''; return;
+  }
+  const b=document.createElement('button');
+  b.type='button'; b.className='chip active'; b.dataset.tag=v; b.textContent='🏷️ '+v;
+  b.addEventListener('click',()=>b.classList.toggle('active'));
+  $('tagChips').appendChild(b);
+  inp.value='';
+}
+function removePhoto(){
+  state.pendingPhoto=null;
+  $('photoPreview').style.display='none';
+  $('photoInput').value='';
+}
+function handlePhotoFile(file){
+  if(!file || !file.type.startsWith('image/')){ toast('That does not look like an image 🤔'); return; }
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=720;
+      let {width:w, height:h}=img;
+      if(w>MAX||h>MAX){ const r=Math.min(MAX/w,MAX/h); w=Math.round(w*r); h=Math.round(h*r); }
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      state.pendingPhoto=c.toDataURL('image/jpeg',0.72);
+      $('photoPreviewImg').src=state.pendingPhoto;
+      $('photoPreview').style.display='block';
+    };
+    img.onerror=()=>toast('Could not read that image 😢');
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ---------- form: save / edit ---------- */
+function resetForm(){
+  state.editingId=null;
+  state.formHearts=3;
+  state.pendingPhoto=null;
+  $('fDate').value=todayStr();
+  $('fTitle').value='';
+  $('fStory').value='';
+  $('customTag').value='';
+  $('photoPreview').style.display='none';
+  $('photoInput').value='';
+  paintHearts();
+  document.querySelectorAll('#tagChips .chip').forEach(c=>c.classList.remove('active'));
+  $('formTitle').textContent='✍️ New memory';
+  $('saveBtn').textContent='💾 Save this memory';
+  $('editingNote').style.display='none';
+  $('cancelEditBtn').style.display='none';
+}
+function editEntry(id){
+  const e=state.entries.find(x=>x.id===id);
+  if(!e) return;
+  state.editingId=id;
+  state.formHearts=e.hearts;
+  state.pendingPhoto=e.photo||null;
+  $('fDate').value=e.date;
+  $('fTitle').value=e.title;
+  $('fStory').value=e.story||'';
+  if(e.photo){ $('photoPreviewImg').src=e.photo; $('photoPreview').style.display='block'; }
+  else $('photoPreview').style.display='none';
+  paintHearts();
+  document.querySelectorAll('#tagChips .chip').forEach(c=>{
+    c.classList.toggle('active', (e.tags||[]).includes(c.dataset.tag));
+  });
+  $('formTitle').textContent='✏️ Edit memory';
+  $('saveBtn').textContent='💾 Update memory';
+  $('editingNote').style.display='block';
+  $('cancelEditBtn').style.display='inline-flex';
+  switchView('write');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function cancelEdit(){ resetForm(); switchView('timeline'); }
+
+function saveEntry(){
+  const date=$('fDate').value;
+  const title=$('fTitle').value.trim();
+  const story=$('fStory').value.trim();
+  if(!date){ toast('📅 Pick a date first!'); return; }
+  if(!title){ toast('📝 Give this memory a title!'); return; }
+  if(daysBetween(date, todayStr())<-0){ toast('⏳ That date is in the future — nice try, Nostradamus!'); return; }
+  const tags=[...document.querySelectorAll('#tagChips .chip.active')].map(c=>c.dataset.tag);
+
+  const prevLatest = state.entries.map(e=>e.date).sort().pop();
+  const prevGap = (!state.editingId && prevLatest) ? Math.max(0, daysBetween(prevLatest, date)) : 0;
+
+  if(state.editingId){
+    const e=state.entries.find(x=>x.id===state.editingId);
+    if(e){
+      e.date=date; e.title=title; e.story=story; e.hearts=state.formHearts;
+      e.tags=tags; e.photo=state.pendingPhoto;
+      saveEntries();
+      resetForm(); switchView('timeline'); renderHome();
+      toast('✏️ Memory updated!');
+    }
+    return;
+  }
+  const entry={ id:uid(), date, title, story, hearts:state.formHearts, tags, photo:state.pendingPhoto, created:Date.now() };
+  state.entries.push(entry);
+  saveEntries();
+  resetForm();
+  checkAndAwardBadges(entry, prevGap);
+  switchView('timeline'); renderHome();
+  toast('💕 Memory saved to the archive!');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---------- lock screen ---------- */
+function initLock(){
+  const pass=localStorage.getItem(K.pass);
+  if(pass===null){
+    $('setupMode').style.display='block';
+    $('unlockMode').style.display='none';
+    $('lockSubtitle').textContent='First time here? Create a secret password for the diary.';
+  }else{
+    $('setupMode').style.display='none';
+    $('unlockMode').style.display='block';
+    $('lockSubtitle').textContent='Yongjun ♥ Yoorin — top secret archives';
+  }
+  setTimeout(()=>$('unlockPass').focus?.() || $('setupPass1').focus?.(), 100);
+}
+function doSetupPassword(){
+  const p1=$('setupPass1').value, p2=$('setupPass2').value;
+  const err=$('setupError');
+  if(!p1.trim()){ err.textContent='Please type a password!'; shakeCard(); return; }
+  if(p1!==p2){ err.textContent='The two passwords do not match!'; shakeCard(); return; }
+  localStorage.setItem(K.pass, p1);
+  unlockApp();
+}
+function doUnlock(){
+  const p=$('unlockPass').value;
+  if(p===localStorage.getItem(K.pass)){ unlockApp(); }
+  else{
+    $('unlockError').textContent='Wrong password! Only true friends may enter. 😤';
+    shakeCard();
+  }
+}
+function shakeCard(){
+  const c=$('lockCard');
+  c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
+}
+function unlockApp(){
+  $('lockScreen').classList.add('hidden');
+  $('app').classList.add('unlocked');
+  renderAll();
+}
+function lockDiary(){
+  closeSettings();
+  $('app').classList.remove('unlocked');
+  $('lockScreen').classList.remove('hidden');
+  $('unlockPass').value=''; $('unlockError').textContent='';
+  initLock();
+}
+
+/* ---------- settings ---------- */
+function openSettings(){ $('settingsModal').classList.add('open'); }
+function closeSettings(){ $('settingsModal').classList.remove('open'); }
+$('settingsModal').addEventListener('click', e=>{ if(e.target===$('settingsModal')) closeSettings(); });
+
+function changePassword(){
+  const cur=$('curPass').value, n1=$('newPass1').value, n2=$('newPass2').value;
+  if(cur!==localStorage.getItem(K.pass)){ toast('🔒 Current password is wrong!'); return; }
+  if(!n1.trim()){ toast('New password cannot be empty!'); return; }
+  if(n1!==n2){ toast('New passwords do not match!'); return; }
+  localStorage.setItem(K.pass, n1);
+  $('curPass').value=$('newPass1').value=$('newPass2').value='';
+  toast('🔑 Password updated!');
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify({app:'yongyoo-diary', version:1, entries:state.entries, badges:state.unlocked}, null, 2)], {type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='yongyoo-diary-backup-'+todayStr()+'.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('⬇️ Backup exported!');
+}
+$('importFile').addEventListener('change', ev=>{
+  const f=ev.target.files[0];
+  if(!f) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(!Array.isArray(data.entries)) throw new Error('bad file');
+      if(!confirm('Replace current diary with this backup?\n('+data.entries.length+' memories, this cannot be undone)')) return;
+      state.entries=data.entries;
+      state.unlocked=data.badges||{};
+      saveEntries(); saveBadges();
+      renderAll();
+      toast('⬆️ Backup imported!');
+      closeSettings();
+    }catch(e){ toast('❌ That file is not a valid YongYoo backup.'); }
+  };
+  reader.readAsText(f);
+  ev.target.value='';
+});
+function wipeAll(){
+  if(!confirm('⚠️ Erase ALL memories, badges and settings?\nThis cannot be undone!')) return;
+  if(!confirm('Are you REALLY sure? Yongjun would cry. 😭')) return;
+  Object.values(K).forEach(k=>localStorage.removeItem(k));
+  location.reload();
+}
+
+/* ---------- demo data ---------- */
+function loadDemo(){
+  if(state.entries.length && !confirm('Add 12 demo memories to the diary?')) return;
+  const dAgo=n=>{ const d=new Date(); d.setDate(d.getDate()-n); return dateToStr(d); };
+  const mk=(ago,title,story,hearts,tags)=>({ id:uid(), date:dAgo(ago), title, story, hearts, tags, photo:null, created:Date.now()-ago*86400000 });
+  const demo=[
+    mk(21,'Day One: The Library Sighting',"Yongjun saw Yoorin in the library for the first time. She was reading by the window and the sunlight hit her hair like a K-drama scene. He forgot how to walk for approximately ten seconds.",3,['saw']),
+    mk(18,'The HELLO Incident',"He practiced saying 'hi' 47 times in the mirror. When she walked past, all that came out was 'hARGH'. She smiled though. Progress? Progress.",2,['talked']),
+    mk(15,'Cafeteria Tray Collision',"Yongjun's tray attacked Yoorin's tray. Kimchi everywhere. They cleaned it up together and she said 'you're funny' — she LAUGHED. Witnessed by two classmates.",4,['ate','talked']),
+    mk(13,'The Group Project Miracle',"The teacher paired them for the science project. Yongjun has never been this motivated about photosynthesis in his entire life.",5,['talked']),
+    mk(12,'She Texted First?!',"Phone buzzed. It was Yoorin. Asking about homework... but STILL. He replied in 4 seconds and then overthought that reply for 4 hours.",4,['texted']),
+    mk(11,'The Ramyeon Debate',"Ran into her at the convenience store. They argued for 20 minutes about which ramyeon is objectively superior. She bought him banana milk at the end.",4,['ate','talked']),
+    mk(10,'The Umbrella Scene',"Rain. One umbrella. Two very red faces. Yongjun got one fully soaked shoulder and says it was the best trade of his life. Peak drama episode.",5,['walked']),
+    mk(8,'The Silent Tuesday',"She was surrounded by her friends all day. Barely any eye contact. Yongjun ate lunch staring into his rice like it held the answers to the universe.",1,['saw','ignored']),
+    mk(5,'Banana Milk Redemption',"He returned the favor and bought her banana milk. She said 'you remembered my favorite?' — DUH. He said 'maybe'. He absolutely remembered.",3,['gift','talked']),
+    mk(2,'High-Five Gone Wrong',"Attempted a cool casual high-five in the hallway. Missed. Hit a door instead. She laughed for a full minute. Does injuring yourself count as flirting?",2,['talked']),
+    mk(1,'The 1:47 AM Talk',"They texted until 1:47 AM about everything and nothing. Favorite movies, worst fears, dream trips. Yongjun fell asleep smiling like an absolute idiot.",4,['texted']),
+    mk(0,'THE WAVE',"She waved first today!! WAVED. FIRST. In front of everyone. Historical event. Scholars will study this day for generations.",5,['saw','talked']),
+  ];
+  state.entries.push(...demo);
+  saveEntries();
+  renderAll();
+  toast('✨ 12 demo memories loaded — explore the Timeline, Stats & Badges!');
+}
+
+/* ---------- confetti ---------- */
+function fireConfetti(){
+  const c=document.createElement('canvas');
+  c.id='confettiCanvas';
+  c.width=innerWidth; c.height=innerHeight;
+  document.body.appendChild(c);
+  const ctx=c.getContext('2d');
+  const pieces=[];
+  const colors=['#ff5c8a','#ffb3c9','#a26bff','#ffd6e4','#ff4d79'];
+  const emojis=['💗','💖','💕','💞','💘'];
+  for(let i=0;i<120;i++){
+    pieces.push({
+      x:Math.random()*c.width, y:-30-Math.random()*c.height*0.5,
+      w:8+Math.random()*8, h:8+Math.random()*8,
+      vy:2+Math.random()*3.5, vx:-1.5+Math.random()*3,
+      rot:Math.random()*Math.PI, vr:-0.1+Math.random()*0.2,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      emoji:Math.random()<0.35 ? emojis[Math.floor(Math.random()*emojis.length)] : null,
+    });
+  }
+  const start=performance.now();
+  (function frame(t){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(const p of pieces){
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      if(p.emoji){ ctx.font='20px serif'; ctx.fillText(p.emoji,-10,8); }
+      else{ ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); }
+      ctx.restore();
+    }
+    if(t-start<3800) requestAnimationFrame(frame);
+    else c.remove();
+  })(start);
+}
+
+/* ---------- lightbox ---------- */
+function openLightbox(src){
+  $('lightboxImg').src=src;
+  $('lightbox').classList.add('open');
+}
+$('lightbox').addEventListener('click', ()=>$('lightbox').classList.remove('open'));
+
+/* ---------- boot ---------- */
+function renderAll(){
+  renderHome(); renderTimeline(); renderStats(); renderBadges();
+}
+function boot(){
+  loadAll();
+  buildHeartsPicker();
+  buildTagChips();
+  resetForm();
+  initLock();
+  $('photoDrop').addEventListener('click', ()=>$('photoInput').click());
+  $('photoInput').addEventListener('change', ev=>handlePhotoFile(ev.target.files[0]));
+  $('customTag').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); addCustomTag(); } });
+  window.addEventListener('resize', ()=>{ if($('view-stats').classList.contains('active')) drawChart(); });
+}
+boot();
+</script>
+</body>
+</html>
